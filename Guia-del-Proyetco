@@ -1,0 +1,98 @@
+Instrucciones:
+1.Instalar docker en el sistema operativo ubuntu con el link ( https://docs.docker.com/engine/install/ubuntu/ )
+
+2.Instalar docker-compose con el link ( https://docs.docker.com/compose/install/linux/ )
+
+3.Creamos prometheus.yml (nano prometheus.yml)
+
+4.Dentro de prometheus.yml pegamos lo siguiente:
+
+scrape_configs:
+- job_name: cadvisor
+  scrape_interval: 5s
+  static_configs:
+  - targets:
+    - cadvisor:8080
+- job_name: prometheus
+  scrape_interval: 5s
+  static_configs:
+  - targets:
+    - prometheus:9090
+    - node-exporter:9100
+    - pushgateway:9091
+    - cadvisor:8080
+
+
+5.Creamos docker-compose.yml  (nano docker-compose.yml )
+
+6.Pegamos dentroel siguiente comando:
+version: '3.2'
+services:
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+    - 9090:9090
+    command:
+    - --config.file=/etc/prometheus/prometheus.yml
+    volumes:
+    - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    depends_on:
+    - cadvisor
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+    container_name: cadvisor
+    ports:
+    - 8080:8080
+    volumes:
+    - /:/rootfs:ro
+    - /var/run:/var/run:rw
+    - /sys:/sys:ro
+    - /var/lib/docker/:/var/lib/docker:ro
+    depends_on:
+    - redis
+  redis:
+    image: redis:latest
+    container_name: redis
+    ports:
+    - 6379:6379
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    depends_on:
+     - prometheus
+     - cadvisor
+  pushgateway:
+    image: prom/pushgateway
+    container_name: pushgateway
+    ports:
+      - "9091:9091"
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: node-exporter
+    restart: unless-stopped
+    ports:
+      - 9100
+
+5.Lo corremos con docker-compose up -d (Esto manda a correr el cAdvisor, Prometheus, node-exporter)
+
+6.Revisamos que cada uno este corriendo ( docker ps)
+
+7.Revisamos la conexion en un navegador:
+para cAdvisor: (localhost:8080)
+para Prometheus: (localhost:9090)
+para Grafana: (localhost:3000)
+
+8.Entramos en Grafana (localhost:3000)
+
+9.Ingresamos a "Data sources"
+
+10.Encontramos nuestra "ip local" (hostname -I) y la copiamos 
+
+11.Señalamos  Prometheus en el url ingresamos (http://"ip local":9090) pegamos ip local
+
+12.Para visualizar ingresamos a Dashboards, new, import e ingresamos el siguiente ID "193"
