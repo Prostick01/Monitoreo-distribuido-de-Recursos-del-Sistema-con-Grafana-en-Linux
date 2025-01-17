@@ -1,9 +1,13 @@
 Instrucciones:
-1.Instalar docker en el sistema operativo ubuntu con el link ( https://docs.docker.com/engine/install/ubuntu/ )
+-Instalamos Node Exporter  wget https://github.com/prometheus/node_exporter/releases/download/v1.8.2/node_exporter-1.8.2.linux-amd64.tar.gz
 
-2.Instalar docker-compose con el link ( https://docs.docker.com/compose/install/linux/ )
+1.Instalar docker en el sistema operativo ubuntu  ( wget https://docs.docker.com/engine/install/ubuntu/ )
 
-3.Creamos prometheus.yml (nano prometheus.yml)
+2.Instalar docker-compose  ( wget https://docs.docker.com/compose/install/linux/ )
+
+3.Intalamos prometheus y creamos prometheus.yml (nano prometheus.yml)
+
+wget https://github.com/prometheus/prometheus/releases/download/v3.1.0/prometheus-3.1.0.linux-amd64.tar.gz
 
 4.Dentro de prometheus.yml pegamos lo siguiente:
 
@@ -25,7 +29,7 @@ scrape_configs:
 
 5.Creamos docker-compose.yml  (nano docker-compose.yml )
 
-6.Pegamos dentroel siguiente comando:
+6.Pegamos dentro el siguiente comando:
 version: '3.2'
 services:
   prometheus:
